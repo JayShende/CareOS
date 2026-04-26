@@ -1,0 +1,20 @@
+{
+  "name": "backend",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "build": "tsc -b",
+    "start": "node dist/index.js",
+    "dev2": "tsx src/index.ts",
+    "dev": "nodemon --watch src --ext ts --exec \"tsx src/index.ts\""
+  },
+  "dependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "nodemon": "^3.1.14",
+    "tsx": "^4.21.0"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}
