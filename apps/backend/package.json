@@ -11,8 +11,10 @@
   },
   "dependencies": {
     "@repo/typescript-config": "workspace:*",
+    "@repo/database": "workspace:*",
     "@types/cors": "^2.8.19",
     "@types/express": "^5.0.6",
+    "better-auth": "^1.6.9",
     "cors": "^2.8.6",
     "dotenv": "^17.4.2",
     "express": "^5.2.1",
