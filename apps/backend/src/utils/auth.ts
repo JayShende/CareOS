@@ -10,4 +10,12 @@ export const auth = betterAuth({
     minPasswordLength: 5,
   },
   trustedOrigins: ["http://localhost:3000"],
+  user: {
+    additionalFields: {
+      role: {
+        type: "string",
+        required: true,
+      },
+    },
+  },
 });

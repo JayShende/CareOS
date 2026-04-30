@@ -1,12 +1,16 @@
 import express, { Router } from "express";
-import testRoute from "../routes/test.route";
-
+import testRoute from "./test.route.js";
+import accountRoutes from "./account.routes.js";
 const router: Router = express.Router();
 
 const defaultRoutes = [
   {
     path: "/test",
     route: testRoute,
+  },
+  {
+    path: "/accounts",
+    route: accountRoutes,
   },
 ];
 
