@@ -16,6 +16,10 @@ export const auth = betterAuth({
         type: "string",
         required: true,
       },
+      doctorId: {
+        type: "string",
+        required: false,
+      },
     },
   },
 });

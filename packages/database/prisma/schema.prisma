@@ -16,7 +16,7 @@ datasource db {
 enum Roles{
 ADMIN
 DOCTOR
-RECEPTIOSNIT
+RECEPTIONIST
 not_assigned
 }
 
@@ -28,6 +28,15 @@ model User {
   email         String
 
   role          Roles
+  
+  // receptionist → doctor
+  doctorId      String? @unique
+  doctor        User?   @relation("DoctorReceptionist", fields: [doctorId], references: [id])
+
+  // doctor → receptionist
+  receptionist  User? @relation("DoctorReceptionist")
+  ReceptionistProfile Receptionist?
+  DoctorProfile Doctor?
 
   emailVerified Boolean   @default(false)
   image         String?
@@ -86,4 +95,123 @@ model Verification {
 
   @@index([identifier])
   @@map("verification")
+}
+
+
+// App Models
+
+enum Gender {
+  MALE
+  FEMALE
+  OTHER
+}
+model Patient{
+  id              String    @id @default(cuid())
+  name            String    
+  phone           String    @unique
+  email           String?   @unique
+  gender          Gender
+  dateOfBirth     DateTime?
+
+  medicalSummary  String?
+  appointments    Appointment[]
+  medicalRecords  MedicalRecord[]
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+}
+
+model Doctor{
+  id              String    @id @default(cuid())
+  userId          String    @unique
+  user            User      @relation(fields: [userId], references: [id])
+  specialty       String
+  experience      Int
+  appointments    Appointment[]
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@map("doctor") 
+}
+
+model Receptionist{
+  id              String    @id @default(cuid())
+  userId          String    @unique
+  user            User      @relation(fields: [userId], references: [id])
+  appointments    Appointment[]
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+
+  @@map("receptionist")
+}
+model Appointment{
+  id              String        @id @default(cuid())
+  
+  patientId       String
+  patient         Patient       @relation(fields: [patientId], references: [id])
+  doctorId        String
+  doctor          Doctor        @relation(fields: [doctorId], references: [id])
+  receptionistId  String
+  receptionist    Receptionist  @relation(fields: [receptionistId], references: [id])
+  scheduledAt     DateTime
+  status          AppointmentStatus
+  
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@map("appointment")
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+}
+
+// Medical Records EMR
+
+model MedicalRecord{
+  id              String    @id @default(cuid())
+  diagnosis       String?
+  notes           String?
+
+  prescriptions   Prescription[]
+
+  patientId       String    
+  patient         Patient   @relation(fields: [patientId], references: [id])
+  attachments     String[] @default([])
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+}
+
+model Prescription{
+  id              String    @id @default(cuid())
+  medicalRecordId String
+  medicalRecord   MedicalRecord @relation(fields: [medicalRecordId], references: [id])
+  
+  medicinePrescription MedicinePrescription[]
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+}
+
+model MedicinePrescription{
+  id              String    @id @default(cuid())
+  
+  prescriptionId String
+  prescription   Prescription @relation(fields: [prescriptionId], references: [id])
+  
+  medicineId     String
+  medicine       Medicines @relation(fields: [medicineId], references: [id])
+  dosage          String
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+}
+
+model Medicines{
+  id              String    @id @default(cuid())
+  name            String
+  medicinePrescription MedicinePrescription[]
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  @@map("medicines")
 }

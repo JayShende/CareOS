@@ -1,58 +1,24 @@
 import { Request, Response } from "express";
 import httpStatus from "http-status";
 import { response } from "../utils/reponses.js";
-import accountService from "../services/account.service.js";
 import ApiError from "../utils/api-error.js";
-import { APIError, BetterAuthError } from "better-auth";
+import patientService from "../services/patient.service.js";
 
-const createAdminAccount = async (req: Request, res: Response) => {
-  try {
-    const body = req.body;
-    const newAdmin = await accountService.createAdminAccount(body);
-    return response(
-      res,
-      httpStatus.OK,
-      "Admin Account Created Successfully",
-      newAdmin,
-    );
-  } catch (error) {
-    console.log(error);
-    if (error instanceof APIError) {
-      return response(res, error.statusCode, error.message, null);
-    }
-    if (error instanceof ApiError) {
-      return response(res, error.statusCode, error.message, null);
-    }
-    return response(
-      res,
-      httpStatus.INTERNAL_SERVER_ERROR,
-      "Internal server error",
-      null,
-    );
-  }
-};
-
-const createDoctorAccount = async (req: Request, res: Response) => {
+const createPatient = async (req: Request, res: Response) => {
   try {
     const body = req.body;
     if (!req.user?.id) {
       return response(res, httpStatus.UNAUTHORIZED, "Unauthorized", null);
     }
-    const newDoctor = await accountService.createDoctorAccount(
-      body,
-      req.user.id,
-    );
+    const newPatient = await patientService.createPatient(body, req.user.id);
     return response(
       res,
       httpStatus.OK,
-      "Doctor Account Created Successfully",
-      newDoctor,
+      "Patient Created Successfully",
+      newPatient,
     );
   } catch (error) {
     console.log(error);
-    if (error instanceof APIError) {
-      return response(res, error.statusCode, error.message, null);
-    }
     if (error instanceof ApiError) {
       return response(res, error.statusCode, error.message, null);
     }
@@ -65,28 +31,32 @@ const createDoctorAccount = async (req: Request, res: Response) => {
   }
 };
 
-const createReceptionistAccount = async (req: Request, res: Response) => {
+const getPatientById = async (req: Request, res: Response) => {
   try {
-    const body = req.body;
+    const { id } = req.params;
+    if (id === undefined) {
+      return response(
+        res,
+        httpStatus.BAD_REQUEST,
+        "Patient ID is required",
+        null,
+      );
+    }
     if (!req.user?.id) {
       return response(res, httpStatus.UNAUTHORIZED, "Unauthorized", null);
     }
-    const newReceptionist = await accountService.createReceptionistAccount(
-      body,
+    const patient = await patientService.getPatientById(
+      id as string,
       req.user.id,
     );
     return response(
       res,
       httpStatus.OK,
-      "Receptionist Account Created Successfully",
-      newReceptionist,
+      "Patient Fetched Successfully",
+      patient,
     );
   } catch (error) {
     console.log(error);
-
-    if (error instanceof APIError) {
-      return response(res, error.statusCode, error.message, null);
-    }
     if (error instanceof ApiError) {
       return response(res, error.statusCode, error.message, null);
     }
@@ -99,8 +69,50 @@ const createReceptionistAccount = async (req: Request, res: Response) => {
   }
 };
 
+const updatePatientPersonalInformation = async (
+  req: Request,
+  res: Response,
+) => {
+  try {
+    const { patientId } = req.params;
+    if (patientId === undefined) {
+      return response(
+        res,
+        httpStatus.BAD_REQUEST,
+        "Patient ID is required",
+        null,
+      );
+    }
+    if (!req.user?.id) {
+      return response(res, httpStatus.UNAUTHORIZED, "Unauthorized", null);
+    }
+    const updatedPatient =
+      await patientService.updatePatientPersonalInformation(
+        patientId as string,
+        req.body,
+        req.user.id,
+      );
+    return response(
+      res,
+      httpStatus.OK,
+      "Patient Updated Successfully",
+      updatedPatient,
+    );
+  } catch (error) {
+    console.log(error);
+    if (error instanceof ApiError) {
+      return response(res, error.statusCode, error.message, null);
+    }
+    return response(
+      res,
+      httpStatus.INTERNAL_SERVER_ERROR,
+      "Internal server error",
+      null,
+    );
+  }
+};
 export default {
-  createAdminAccount,
-  createDoctorAccount,
-  createReceptionistAccount,
+  createPatient,
+  getPatientById,
+  updatePatientPersonalInformation,
 };
