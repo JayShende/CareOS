@@ -55,10 +55,87 @@ const addAttachments = z.object({
   }),
 });
 
+const createPrescription = z.object({
+  body: z.object({
+    medicalRecordId: z.string({ message: "medicalRecordId must be a valid String" }),
+    medicineItems: z
+      .array(
+        z.object({
+          medicineId: z.string({ message: "medicineId must be a valid String" }),
+          dosage: z.string({ message: "dosage must be a valid String" }),
+        }),
+      )
+      .optional(),
+  }),
+});
+
+const getPrescriptions = z.object({
+  query: z.object({
+    medicalRecordId: z
+      .string({ message: "medicalRecordId must be a valid String" })
+      .optional(),
+  }),
+});
+
+const updatePrescription = z.object({
+  body: z.object({
+    medicineItems: z
+      .array(
+        z.object({
+          medicineId: z.string({ message: "medicineId must be a valid String" }),
+          dosage: z.string({ message: "dosage must be a valid String" }),
+        }),
+      )
+      .optional(),
+  }),
+});
+
+const addMedicineLineItem = z.object({
+  body: z.object({
+    medicineId: z.string({ message: "medicineId must be a valid String" }),
+    dosage: z.string({ message: "dosage must be a valid String" }),
+  }),
+});
+
+const updateMedicineLineItem = z.object({
+  body: z.object({
+    medicineId: z
+      .string({ message: "medicineId must be a valid String" })
+      .optional(),
+    dosage: z.string({ message: "dosage must be a valid String" }).optional(),
+  }),
+});
+
+const createMedicine = z.object({
+  body: z.object({
+    name: z.string({ message: "name must be a valid String" }),
+  }),
+});
+
+const getMedicines = z.object({
+  query: z.object({
+    search: z.string({ message: "search must be a valid String" }).optional(),
+  }),
+});
+
+const updateMedicine = z.object({
+  body: z.object({
+    name: z.string({ message: "name must be a valid String" }).optional(),
+  }),
+});
+
 export default {
   getMedicalRecord,
   getMedicalRecordAttachments,
   createMedicalRecord,
   updateMedicalRecord,
   addAttachments,
+  createPrescription,
+  getPrescriptions,
+  updatePrescription,
+  addMedicineLineItem,
+  updateMedicineLineItem,
+  createMedicine,
+  getMedicines,
+  updateMedicine,
 };
